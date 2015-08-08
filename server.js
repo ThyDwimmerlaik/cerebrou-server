@@ -13,8 +13,8 @@ var connection = mysql.createConnection({
   database : data_conn.database
 });
 
-http.createServer(funciont(req,res){
-  switch(req,url){
+http.createServer(function(req,res){
+  switch(req.url){
     case '/':
       console.log('[200] '+req.method+' to '+req.url);
       res.writeHead(200,"OK",{'Content-Type':'text/html'});
@@ -30,13 +30,14 @@ http.createServer(funciont(req,res){
       if(req.method=='POST'){
         console.log('[200] '+req.method+' to '+req.url);
         req.on('data',function(chunk){
-          datosLectura = qs.parse(chunk);
-          console.log('Recieved data: '+datosLectura);
+          datosLectura = qs.parse(String(chunk));
+          console.log('Recieved data:');
+          console.log(datosLectura);
         });
         req.on('end',function(){
-          res.WriteHead(200,'OK',{'Content-Type':'text/html'});
-          query = 'INSERT INTO cu_lecturas (id_dispositivo,valor,fecha)
-                  VALUES ('+datosLectura.switch+','+datosLectura.current+', NOW());';
+          res.writeHead(200,'OK',{'Content-Type':'text/html'});
+          res.end();
+          query = 'INSERT INTO cu_lecturas (id_dispo,valor,fecha) VALUES ('+datosLectura.switch+','+datosLectura.current+', NOW());';
           console.log(query);
           connection.query(query,function(err,result){
             if(!err) console.log('Successful query!');
