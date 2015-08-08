@@ -20,12 +20,12 @@ http.createServer(function(req,res){
       res.writeHead(200,"OK",{'Content-Type':'text/html'});
       res.write('<html><head><title>Hello cerebroU!</title><head><body>');
       res.write('<form action="/getdata" method="post">');
-      res.write('Switch: <input type="number" name="switch" value=""/><br/>');
-      res.write('Current: <input type="number" name="current" value=""/><br/>');
+      res.write('Switch: <input type="text" name="switch" value=""/><br/>');
+      res.write('Current: <input type="text" name="current" value=""/><br/>');
       res.write('<input type="submit"/>');
       res.write('</form></body></html>');
       res.end();
-    break,
+    break;
     case '/getdata':
       if(req.method=='POST'){
         console.log('[200] '+req.method+' to '+req.url);
