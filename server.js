@@ -1,17 +1,34 @@
 var http = require('http');
 var mysql = require('mysql');
 var qs = require('querystring')
-var data_conn = require('../db/connection.json');
+var conn = require('../db/connection.json');
 
+var connection;
 var datosLectura;
 var query='';
 
-var connection = mysql.createConnection({
-  host :     data_conn.host,
-  user :     data_conn.user,
-  password : data_conn.pass,
-  database : data_conn.database
-});
+var dataConn = {
+  host :     conn.host,
+  user :     conn.user,
+  password : conn.pass,
+  database : conn.database
+};
+
+function conenct2db(query){
+  connection = mysql.createConnection(dataConn);
+  connection.on('error',function(err){
+    if(err){
+      console.log('Error connecting to db: ',err);
+      setTimeout(connect2db,5000);
+    }
+    else{
+      connection.query(query,function(err,result){
+        if(!err) console.log('Successful query!');
+        else console.log(err.message);
+      });
+    }
+  });
+}
 
 http.createServer(function(req,res){
   switch(req.url){
@@ -39,10 +56,7 @@ http.createServer(function(req,res){
           res.end();
           query = 'INSERT INTO cu_lecturas (id_dispo,valor,fecha) VALUES ('+datosLectura.switch+','+datosLectura.current+', NOW());';
           console.log(query);
-          connection.query(query,function(err,result){
-            if(!err) console.log('Successful query!');
-            else console.log(err.message);
-          });
+          connec2db(query);
         });          
       }else{
         console.log('[405] '+req.method+" to "+req.url);
