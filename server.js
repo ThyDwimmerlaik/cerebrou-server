@@ -42,11 +42,13 @@ function handleDB(req,res){
     }
     writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
     connection.query(query,function(err,result){
-      if(!err){
-        writeLog('['+currentDate()+'] '+'Data query successfully!');
-        if(result!=NULL) return result;
-      }
+      if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
       else writeLog('['+currentDate()+'] '+err.message);
+    });
+    connection.on('result',function(result){
+      res.writeHead(200,'OK',{'Content-Type':'text/html'});
+      res.write(result);
+      res.end();
     });
     connection.on('error', function(err) {      
       writeLog('['+currentDate()+'] '+err.message);
@@ -93,11 +95,7 @@ http.createServer(function(req,res){
     break;
     case '/getdisp':
       query = 'SELECT * FROM cu_dispos;';
-      var rows = handleDB(req,res);
-      console.log(rows);
-      res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.write('');
-      res.end();
+      handleDB(req,res);
     break;
     default:
       writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
