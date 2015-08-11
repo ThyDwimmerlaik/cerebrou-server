@@ -27,6 +27,7 @@ function writeLog(message){
   var stream = fs.createWriteStream('./debug/access.log',{flags:'a'});
   stream.once('open',function(fd){
     stream.write(message);
+    stream.write('\n');
   });
 }
 
