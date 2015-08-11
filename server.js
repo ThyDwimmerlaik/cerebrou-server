@@ -1,6 +1,7 @@
 var http = require('http');
 var mysql = require('mysql');
 var qs = require('querystring')
+var fs = require('fs');
 var conn = require('../db/connection.json');
 
 var datosLectura;
@@ -21,22 +22,29 @@ function currentDate(){
   return d;
 }
 
+function writeLog(message){
+  console.log(message);
+  fs.writeFile('info.log',message,function(err){
+    if(err) return console.log('['+currentDate()+'] ERROR: cant write on log file');
+  });
+}
+
 function handleDB(req,res){
   pool.getConnection(function(err,connection){
     if(err){
       connection.release();
-      console.log('['+currentDate()+'] '+err.message);
+      writeLog('['+currentDate()+'] '+err.message);
       res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
       res.end();
       return;
     }
-    console.log('['+currentDate()+'] '+'Connected to DB as id: ',connection.threadId);
+    writeLog('['+currentDate()+'] '+'Connected to DB as id: ',connection.threadId);
     connection.query(query,function(err,result){
-      if(!err) console.log('['+currentDate()+'] '+'Data query successfully!');
-      else console.log('['+currentDate()+'] '+err.message);
+      if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
+      else writeLog('['+currentDate()+'] '+err.message);
     });
     connection.on('error', function(err) {      
-      console.log('['+currentDate()+'] '+err.message);
+      writeLog('['+currentDate()+'] '+err.message);
       res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
       res.end();
       return;
@@ -47,7 +55,7 @@ function handleDB(req,res){
 http.createServer(function(req,res){
   switch(req.url){
     case '/':
-      console.log('['+currentDate()+'] '+'[INFO] Hand-seted parameters.');
+      writeLog('['+currentDate()+'] '+'[INFO] Hand-seted parameters.');
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
       res.write('<html><head><title>Hello cerebroU!</title><head><body>');
       res.write('<form action="/getdata" method="post">');
@@ -63,30 +71,30 @@ http.createServer(function(req,res){
       if(req.method=='POST'){
         req.on('data',function(chunk){
           datosLectura = qs.parse(String(chunk));
-          console.log('['+currentDate()+'] '+'Recieved data: ',datosLectura);
+          writeLog('['+currentDate()+'] '+'Recieved data: ',datosLectura);
         });
         req.on('end',function(){
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.end();
           query = 'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', NOW());';
-          //console.log(query);
+          //writeLog(query);
           handleDB(req,res);
         });
       }else{
-        console.log('['+currentDate()+'] '+'Parameters not found.');
+        writeLog('['+currentDate()+'] '+'Parameters not found.');
         res.writeHead('405','Method not supported',{'Content-Type':'text/html'});
         res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
       }
     break;
 
     default:
-      console.log('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
+      writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
       res.writeHead('404','N',{'Content-Type':'text/html'});
       res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
   }
 }).listen(8080,function(err){
   if(!err)
-    console.log('['+currentDate()+'] '+'[INFO] Listening on 8080');
+    writeLog('['+currentDate()+'] '+'[INFO] Listening on 8080');
   else
-    console.log('['+currentDate()+'] '+'[INFO] ',err.message);
+    writeLog('['+currentDate()+'] '+'[INFO] ',err.message);
   });
