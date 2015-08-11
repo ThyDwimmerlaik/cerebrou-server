@@ -42,19 +42,14 @@ function handleDB(req,res,q){
       return;
     }
     writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
-    connection.query(q,function(err){
+    connection.query(q,function(err,rows){
+      connection.release();
       if(!err){
         writeLog('['+currentDate()+'] '+'Data query successfully!');
-        connection.on('result',function(result){
-          res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.json(result);
-          res.end();
-       });
+        console.log(rows);
       }
       else writeLog('['+currentDate()+'] '+err.message);
-      connection.release();
     });
-    dataResult=[];
     connection.on('error', function(err) {      
       connection.release();
       writeLog('['+currentDate()+'] '+err.message);
