@@ -18,7 +18,7 @@ var pool = mysql.createPool({
 
 function currentDate(){
   var d = new Date();
-  d.setHours(d.getDate()-8);
+  d.setHours(d.getHours()-5);
   return d;
 }
 
@@ -40,9 +40,12 @@ function handleDB(req,res){
       res.end();
       return;
     }
-    writeLog('['+currentDate()+'] '+'Connected to DB as id: ',connection.threadId);
+    writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
     connection.query(query,function(err,result){
-      if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
+      if(!err){
+        writeLog('['+currentDate()+'] '+'Data query successfully!');
+        if(result!=NULL) return result;
+      }
       else writeLog('['+currentDate()+'] '+err.message);
     });
     connection.on('error', function(err) {      
@@ -73,12 +76,12 @@ http.createServer(function(req,res){
       if(req.method=='POST'){
         req.on('data',function(chunk){
           datosLectura = qs.parse(String(chunk));
-          writeLog('['+currentDate()+'] '+'Recieved data: ',datosLectura);
+          writeLog('['+currentDate()+'] '+'Recieved data');
         });
         req.on('end',function(){
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.end();
-          query = 'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', NOW());';
+          query = 'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));';
           //writeLog(query);
           handleDB(req,res);
         });
@@ -88,7 +91,14 @@ http.createServer(function(req,res){
         res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
       }
     break;
-
+    case '/getdisp':
+      query = 'SELECT * FROM cu_dispos;';
+      var rows = handleDB(req,res);
+      console.log(rows);
+      res.writeHead(200,'OK',{'Content-Type':'text/html'});
+      res.write('');
+      res.end();
+    break;
     default:
       writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
       res.writeHead('404','N',{'Content-Type':'text/html'});
@@ -98,5 +108,5 @@ http.createServer(function(req,res){
   if(!err)
     writeLog('['+currentDate()+'] '+'[INFO] Listening on 8080');
   else
-    writeLog('['+currentDate()+'] '+'[INFO] ',err.message);
+    writeLog('['+currentDate()+'] '+'[INFO] '+err.message);
   });
