@@ -6,7 +6,7 @@ var conn = require('../db/connection.json');
 
 var datosLectura;
 var query='';
-var dataResult = [];
+var dataResult;
 
 var pool = mysql.createPool({
   connectionLimit :   100,
@@ -46,10 +46,11 @@ function handleDB(req,res){
       if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
       else writeLog('['+currentDate()+'] '+err.message);
     });
+    dataResult=[];
     connection.on('result',function(result){
         dataResult.push(result);
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.write(dataResult);
+        res.write(dataResult.length);
         res.end();
       });
     connection.on('error', function(err) {      
@@ -96,7 +97,7 @@ http.createServer(function(req,res){
       }
     break;
     case '/getdisp':
-      query = 'SELECT * FROM cu_dispos;';
+      query = 'SELECT id FROM cu_dispos;';
       handleDB(req,res);
     break;
     default:
