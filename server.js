@@ -45,12 +45,13 @@ function handleDB(req,res,q){
     connection.query(q,function(err,rows){
       connection.release();
       if(!err){
+        var stringRows = [];
         for (var i=0;i<rows.length;i++){
-          var stringRows[i] = String(rows[i].id);
+          stringRows[i] = String(rows[i].id);
         }
         writeLog('['+currentDate()+'] '+'Data query successfully!');
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.write(String(stringRows));
+        res.write('#'+String(stringRows)+'&');
         res.end();
       }
       else writeLog('['+currentDate()+'] '+err.message);
