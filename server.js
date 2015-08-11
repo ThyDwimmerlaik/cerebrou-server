@@ -32,7 +32,7 @@ function writeLog(message){
   });
 }
 
-function handleDB(req,res){
+function handleDB(req,res,q){
   pool.getConnection(function(err,connection){
     if(err){
       connection.release();
@@ -42,15 +42,15 @@ function handleDB(req,res){
       return;
     }
     writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
-    connection.query(query,function(err){
+    connection.query(q,function(err){
+      connection.release();
       if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
       else writeLog('['+currentDate()+'] '+err.message);
     });
     dataResult=[];
     connection.on('result',function(result){
-        dataResult.push(result);
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.write(dataResult.length);
+        res.json(result);
         res.end();
       });
     connection.on('error', function(err) {      
@@ -88,7 +88,7 @@ http.createServer(function(req,res){
           res.end();
           query = 'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));';
           //writeLog(query);
-          handleDB(req,res);
+          handleDB(req,res,query);
         });
       }else{
         writeLog('['+currentDate()+'] '+'Parameters not found.');
@@ -98,7 +98,7 @@ http.createServer(function(req,res){
     break;
     case '/getdisp':
       query = 'SELECT id FROM cu_dispos;';
-      handleDB(req,res);
+      handleDB(req,res,query);
     break;
     default:
       writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
