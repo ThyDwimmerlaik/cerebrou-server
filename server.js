@@ -6,6 +6,7 @@ var conn = require('../db/connection.json');
 
 var datosLectura;
 var query='';
+var stream = fs.createWriteStream('./debug/access.log',{flags:'a'});
 
 var pool = mysql.createPool({
   connectionLimit :   100,
@@ -24,8 +25,8 @@ function currentDate(){
 
 function writeLog(message){
   console.log(message);
-  fs.writeFile('info.log',message,function(err){
-    if(err) return console.log('['+currentDate()+'] ERROR: cant write on log file');
+  stream.once('open',function(fd){
+    stream.write(message);
   });
 }
 
