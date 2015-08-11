@@ -43,17 +43,20 @@ function handleDB(req,res,q){
     }
     writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
     connection.query(q,function(err){
-      connection.release();
-      if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
+      if(!err){
+        writeLog('['+currentDate()+'] '+'Data query successfully!');
+        connection.on('result',function(result){
+          res.writeHead(200,'OK',{'Content-Type':'text/html'});
+          res.json(result);
+          res.end();
+       });
+      }
       else writeLog('['+currentDate()+'] '+err.message);
+      connection.release();
     });
     dataResult=[];
-    connection.on('result',function(result){
-        res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.json(result);
-        res.end();
-      });
     connection.on('error', function(err) {      
+      connection.release();
       writeLog('['+currentDate()+'] '+err.message);
       res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
       res.end();
