@@ -46,7 +46,7 @@ function handleDB(req,res,q){
       connection.release();
       if(!err){
         writeLog('['+currentDate()+'] '+'Data query successfully!');
-        console.log(rows);
+        return rows;
       }
       else writeLog('['+currentDate()+'] '+err.message);
     });
@@ -82,11 +82,10 @@ http.createServer(function(req,res){
           writeLog('['+currentDate()+'] '+'Recieved data');
         });
         req.on('end',function(){
+          //writeLog(query);
+          handleDB(req,res,'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));');
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.end();
-          query = 'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));';
-          //writeLog(query);
-          handleDB(req,res,query);
         });
       }else{
         writeLog('['+currentDate()+'] '+'Parameters not found.');
@@ -95,8 +94,10 @@ http.createServer(function(req,res){
       }
     break;
     case '/getdisp':
-      query = 'SELECT id FROM cu_dispos;';
-      handleDB(req,res,query);
+      var r = handleDB(req,res,'SELECT id FROM cu_dispos;');
+      res.writeHead(200,'OK',{'Content-Type':'text/html'});
+      res.json(r);
+      res.end();
     break;
     default:
       writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
