@@ -45,9 +45,11 @@ function handleDB(req,res,q){
     connection.query(q,function(err,rows){
       connection.release();
       if(!err){
-        var stringRows;
+        var stringRows = [];
         writeLog('['+currentDate()+'] '+'Data query successfully!');
-        stringRows = String(rows);
+        for (var i=0;i<rows.length;i++){
+          stringRows[i] = String(rows[i],id);
+        }
         return stringRows;
       }
       else writeLog('['+currentDate()+'] '+err.message);
