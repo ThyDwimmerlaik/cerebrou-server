@@ -45,12 +45,13 @@ function handleDB(req,res,q){
     connection.query(q,function(err,rows){
       connection.release();
       if(!err){
-        var stringRows = [];
-        writeLog('['+currentDate()+'] '+'Data query successfully!');
         for (var i=0;i<rows.length;i++){
-          stringRows[i] = String(rows[i],id);
+          var stringRows[i] = String(rows[i].id);
         }
-        return stringRows;
+        writeLog('['+currentDate()+'] '+'Data query successfully!');
+        res.writeHead(200,'OK',{'Content-Type':'text/html'});
+        res.write(String(stringRows));
+        res.end();
       }
       else writeLog('['+currentDate()+'] '+err.message);
     });
@@ -88,8 +89,6 @@ http.createServer(function(req,res){
         req.on('end',function(){
           //writeLog(query);
           handleDB(req,res,'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));');
-          res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.end();
         });
       }else{
         writeLog('['+currentDate()+'] '+'Parameters not found.');
@@ -98,10 +97,7 @@ http.createServer(function(req,res){
       }
     break;
     case '/getdisp':
-      var r = handleDB(req,res,'SELECT id FROM cu_dispos;');
-      res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.write(r);
-      res.end();
+      handleDB(req,res,'SELECT id FROM cu_dispos;');
     break;
     default:
       writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
