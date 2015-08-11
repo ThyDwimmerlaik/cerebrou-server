@@ -6,6 +6,7 @@ var conn = require('../db/connection.json');
 
 var datosLectura;
 var query='';
+var dataResult = [];
 
 var pool = mysql.createPool({
   connectionLimit :   100,
@@ -44,12 +45,13 @@ function handleDB(req,res){
     connection.query(query,function(err){
       if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
       else writeLog('['+currentDate()+'] '+err.message);
-      connection.on('result',function(result){
+    });
+    connection.on('result',function(result){
+        dataResult.push(result);
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.write(result);
+        res.write(dataResult);
         res.end();
       });
-    });
     connection.on('error', function(err) {      
       writeLog('['+currentDate()+'] '+err.message);
       res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
