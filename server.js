@@ -15,6 +15,12 @@ var pool = mysql.createPool({
   debug :             false
 });
 
+function currentDate(){
+  var d = newDate();
+  d.setHours(d.getDate()-8);
+  return d;
+}
+
 function handleDB(req,res){
   pool.getConnection(function(err,connection){
     if(err){
@@ -41,12 +47,14 @@ function handleDB(req,res){
 http.createServer(function(req,res){
   switch(req.url){
     case '/':
-      console.log('[200] '+req.method+' to '+req.url);
+      console.log('['+currentDate()+'] '+'[200] '+req.method+' to '+req.url);
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
       res.write('<html><head><title>Hello cerebroU!</title><head><body>');
       res.write('<form action="/getdata" method="post">');
       res.write('Switch: <input type="text" name="switch" value=""/><br/>');
       res.write('Current: <input type="text" name="current" value=""/><br/>');
+      res.write('Current: <input type="text" name="max" value=""/><br/>');
+      res.write('Current: <input type="text" name="min" value=""/><br/>');
       res.write('<input type="submit"/>');
       res.write('</form></body></html>');
       res.end();
@@ -61,7 +69,7 @@ http.createServer(function(req,res){
         req.on('end',function(){
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.end();
-          query = 'INSERT INTO cu_lecturas (id_dispo,valor,fecha) VALUES ('+datosLectura.switch+','+datosLectura.current+', NOW());';
+          query = 'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.current+','+datosLectura.max+','+datosLectura.min+', NOW());';
           //console.log(query);
           handleDB(req,res);
         });
