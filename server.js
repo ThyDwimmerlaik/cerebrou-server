@@ -45,8 +45,10 @@ function handleDB(req,res,q){
     connection.query(q,function(err,rows){
       connection.release();
       if(!err){
+        var stringRows;
         writeLog('['+currentDate()+'] '+'Data query successfully!');
-        return rows;
+        stringRows = String(rows);
+        return stringRows;
       }
       else writeLog('['+currentDate()+'] '+err.message);
     });
@@ -96,7 +98,7 @@ http.createServer(function(req,res){
     case '/getdisp':
       var r = handleDB(req,res,'SELECT id FROM cu_dispos;');
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.write(String(r));
+      res.write(r);
       res.end();
     break;
     default:
