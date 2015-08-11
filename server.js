@@ -41,14 +41,14 @@ function handleDB(req,res){
       return;
     }
     writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
-    connection.query(query,function(err,result){
+    connection.query(query,function(err){
       if(!err) writeLog('['+currentDate()+'] '+'Data query successfully!');
       else writeLog('['+currentDate()+'] '+err.message);
-    });
-    connection.on('result',function(result){
-      res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.write(result);
-      res.end();
+      connection.on('result',function(result){
+        res.writeHead(200,'OK',{'Content-Type':'text/html'});
+        res.write(result);
+        res.end();
+      });
     });
     connection.on('error', function(err) {      
       writeLog('['+currentDate()+'] '+err.message);
