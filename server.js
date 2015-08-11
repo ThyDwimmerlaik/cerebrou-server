@@ -96,7 +96,7 @@ http.createServer(function(req,res){
     case '/getdisp':
       var r = handleDB(req,res,'SELECT id FROM cu_dispos;');
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.json(r);
+      res.write(String(r));
       res.end();
     break;
     default:
