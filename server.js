@@ -24,10 +24,10 @@ function currentDate(){
 }
 
 function writeLog(message){
-  console.log(message);
+  console.log('['+currentDate()+'] '+message);
   var stream = fs.createWriteStream('./debug/access.log',{flags:'a'});
   stream.once('open',function(fd){
-    stream.write(message);
+    stream.write('['+currentDate()+'] '+message);
     stream.write('\n');
   });
 }
@@ -36,30 +36,35 @@ function handleDB(req,res,q){
   pool.getConnection(function(err,connection){
     if(err){
       connection.release();
-      writeLog('['+currentDate()+'] '+err.message);
+      writeLog(err.message);
       res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
       res.end();
       return;
     }
-    writeLog('['+currentDate()+'] '+'Connected to DB as id: '+connection.threadId);
+    writeLog('Connected to DB as id: '+connection.threadId);
     connection.query(q,function(err,rows){
       connection.release();
       if(!err){
-        var stringRows = [];
-        for (var i=0;i<rows.length;i++){
-          stringRows[i] = String(rows[i].id);
-        }
-        writeLog('['+currentDate()+'] '+'Data query successfully!');
-        res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        if(rows.length > 0)
+        if(rows.length > 0){
+          var stringRows = [];
+          for (var i=0;i<rows.length;i++){
+            stringRows[i] = String(rows[i].id);
+          }
+          writeLog('Data query and printed successfully!');
+          res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+String(stringRows)+'&');
-        res.end();
+          res.end();
+        else{
+          writeLog('Data query and inserted successfully!');
+          res.writeHead(200,'OK',{'Content-Type':'text/html'});
+          res.end();
+        }
       }
-      else writeLog('['+currentDate()+'] '+err.message);
+      else writeLog(err.message);
     });
     connection.on('error', function(err) {      
       connection.release();
-      writeLog('['+currentDate()+'] '+err.message);
+      writeLog(err.message);
       res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
       res.end();
       return;
@@ -70,7 +75,7 @@ function handleDB(req,res,q){
 http.createServer(function(req,res){
   switch(req.url){
     case '/':
-      writeLog('['+currentDate()+'] '+'[INFO] Hand-seted parameters.');
+      writeLog('[INFO] Hand-seted parameters.');
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
       res.write('<html><head><title>Hello cerebroU!</title><head><body>');
       res.write('<form action="/getdata" method="post">');
@@ -86,14 +91,14 @@ http.createServer(function(req,res){
       if(req.method=='POST'){
         req.on('data',function(chunk){
           datosLectura = qs.parse(String(chunk));
-          writeLog('['+currentDate()+'] '+'Recieved data');
+          writeLog('Recieved data');
         });
         req.on('end',function(){
           //writeLog(query);
           handleDB(req,res,'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));');
         });
       }else{
-        writeLog('['+currentDate()+'] '+'Parameters not found.');
+        writeLog('Parameters not found.');
         res.writeHead('405','Method not supported',{'Content-Type':'text/html'});
         res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
       }
@@ -102,13 +107,13 @@ http.createServer(function(req,res){
       handleDB(req,res,'SELECT id FROM cu_dispos;');
     break;
     default:
-      writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
+      writeLog('[404] '+req.method+' to '+req.url);
       res.writeHead('404','N',{'Content-Type':'text/html'});
       res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
   }
 }).listen(8080,function(err){
   if(!err)
-    writeLog('['+currentDate()+'] '+'[INFO] Listening on 8080');
+    writeLog('[INFO] Listening on 8080');
   else
-    writeLog('['+currentDate()+'] '+'[INFO] '+err.message);
+    writeLog('[INFO] '+err.message);
   });
