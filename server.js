@@ -50,12 +50,12 @@ function handleDB(req,res,q){
           stringRows[i] = String(rows[i].id);
         }
         writeLog('['+currentDate()+'] '+'Data query successfully!');
-        return stringRows;
+        res.writeHead(200,'OK',{'Content-Type':'text/html'});
+        if(rows.length > 0)
+          res.write('#'+String(stringRows)+'&');
+        res.end();
       }
-      else{
-        writeLog('['+currentDate()+'] '+err.message);
-        return;
-      }
+      else writeLog('['+currentDate()+'] '+err.message);
     });
     connection.on('error', function(err) {      
       connection.release();
@@ -99,12 +99,7 @@ http.createServer(function(req,res){
       }
     break;
     case '/getdisp':
-      var r;
-      handleDB(req,res,'SELECT id FROM cu_dispos;',function(resDB){
-        res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.write('#'+String(resDB)+'&');
-        res.end();
-      });
+      handleDB(req,res,'SELECT id FROM cu_dispos;');
     break;
     default:
       writeLog('['+currentDate()+'] '+'[404] '+req.method+' to '+req.url);
