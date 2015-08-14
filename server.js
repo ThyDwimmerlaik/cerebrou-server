@@ -54,6 +54,7 @@ function handleDB(req,res,q){
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+String(stringRows)+'&');
           res.end();
+        }
         else{
           writeLog('Data query and inserted successfully!');
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
@@ -108,7 +109,7 @@ http.createServer(function(req,res){
     break;
     default:
       writeLog('[404] '+req.method+' to '+req.url);
-      res.writeHead('404','N',{'Content-Type':'text/html'});
+      res.writeHead('404','Not found',{'Content-Type':'text/html'});
       res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
   }
 }).listen(8080,function(err){
