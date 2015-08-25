@@ -97,8 +97,9 @@ http.createServer(function(req,res){
         });
         req.on('end',function(){
           //writeLog(query);
+          writeLog(String(datosLectura.dev_id));
           if(String(datosLectura.dev_id[0])=="S"){
-            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,date) VALUES ('+datosLectura.dev_id+','+datosLectura.a+','+datosLectura.b+','+datosLectura.c+', (NOW()-INTERVAL 5 HOUR));');
+            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,datetime) VALUES ('"+datosLectura.dev_id+"','+datosLectura.a+','+datosLectura.b+','+datosLectura.c+', (NOW()-INTERVAL 5 HOUR));');
           }
           else{
             writeLog('Parameters not found.');
