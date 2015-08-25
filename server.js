@@ -58,6 +58,7 @@ function handleDB(req,res,q){
         else{
           writeLog('Data query and inserted successfully!');
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
+          res.writeLog(q);
           res.end();
         }
       }
@@ -80,10 +81,10 @@ http.createServer(function(req,res){
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
       res.write('<html><head><title>Hello cerebroU!</title><head><body>');
       res.write('<form action="/getdata" method="post">');
-      res.write('Switch: <input type="text" name="switch" value=""/><br/>');
-      res.write('Power: <input type="text" name="power" value=""/><br/>');
-      res.write('Max Current: <input type="text" name="max" value=""/><br/>');
-      res.write('Min Current: <input type="text" name="min" value=""/><br/>');
+      res.write('Device ID: <input type="text" name="dev_id" value=""/><br/>');
+      res.write('a: <input type="text" name="a" value=""/><br/>');
+      res.write('b: <input type="text" name="b" value=""/><br/>');
+      res.write('c: <input type="text" name="c" value=""/><br/>');
       res.write('<input type="submit"/>');
       res.write('</form></body></html>');
       res.end();
@@ -96,7 +97,14 @@ http.createServer(function(req,res){
         });
         req.on('end',function(){
           //writeLog(query);
-          handleDB(req,res,'INSERT INTO cu_lecturas (id_dispo,valor,max,min,fecha) VALUES ('+datosLectura.switch+','+datosLectura.power+','+datosLectura.max+','+datosLectura.min+', (NOW()-INTERVAL 5 HOUR));');
+          if(String(datosLectura.dev_id[0])=="S"){
+            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,date) VALUES ('+datosLectura.dev_id+','+datosLectura.a+','+datosLectura.b+','+datosLectura.c+', (NOW()-INTERVAL 5 HOUR));');
+          }
+          else{
+            writeLog('Parameters not found.');
+            res.writeHead('405','Method not supported',{'Content-Type':'text/html'});
+            res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
+          }
         });
       }else{
         writeLog('Parameters not found.');
@@ -105,7 +113,7 @@ http.createServer(function(req,res){
       }
     break;
     case '/getdisp':
-      handleDB(req,res,'SELECT id FROM cu_dispos;');
+      handleDB(req,res,'SELECT id FROM cerebrou_devices;');
     break;
     default:
       writeLog('[404] '+req.method+' to '+req.url);
