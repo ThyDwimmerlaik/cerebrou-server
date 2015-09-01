@@ -97,7 +97,7 @@ http.createServer(function(req,res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
             if(query_res[j].type=="R" || query_res[j].type=="M"){
-              timeoutDevices[k] = {id:query_res[j].id,timeout:query_res[j].A};
+              timeoutDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
               k+=1;
             }
           }
@@ -119,6 +119,7 @@ http.createServer(function(req,res){
           res.write('~HALT');
           res.end();
         }
+        checkReadDevices(timeoutDevices);
       }
     break;
     case '/update':
@@ -186,3 +187,11 @@ function dequeue(queue){
   }
 }
 
+function checkReadDevices(array){
+  var x = new Date();
+  for(var i in checkReadDevices){
+    if(x > array.l.setSeconds(array.l.getSeconds()+array.l.timeout)){
+      writeLog('Timeout of device '+array.l.id);
+    }
+  }
+}
