@@ -190,8 +190,9 @@ function dequeue(queue){
 function checkReadDevices(array){
   var x = new Date();
   for(var i in array){
-    if(x > array[i].l.setSeconds(array[i].l.getSeconds()+array[i].timeout)){
-      writeLog('Timeout of device '+array.l.id);
+    if(x > array[i].last.setSeconds(array[i].last.getSeconds()+array[i].timeout)){
+      enqueue(orders_queue,array[i].id+'D');
+      array[i].last = x;
     }
   }
 }
