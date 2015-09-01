@@ -121,9 +121,7 @@ http.createServer(function(req,res){
         query = 'SELECT id FROM cu_devices WHERE type="W";';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
-            enqueue(orders_queue,query_res[j].id+'D',function{
-              console.log(orders_queue);
-            });
+            enqueue(orders_queue,query_res[j].id+'D');
           }
         });
       }
@@ -144,9 +142,11 @@ http.createServer(function(req,res){
   });
 
 function enqueue(queue,element){
+  console.log(queue);
   queue.push(element);
 }
 
 function dequeue(queue){
+  console.log(queue);
   return queue.shift();
 }
