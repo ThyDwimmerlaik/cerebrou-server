@@ -4,7 +4,7 @@ var qs = require('querystring')
 var fs = require('fs');
 var conn = require('../db/connection.json');
 
-var datosRecibidos;
+var readPostData;
 var query='';
 
 var orders_queue = [];
@@ -90,14 +90,14 @@ http.createServer(function(req,res){
     case '/getdata':
       if(req.method=='POST'){
         req.on('data',function(chunk){
-          datosLectura = qs.parse(String(chunk));
+          readPostData = qs.parse(String(chunk));
           writeLog('Recieved data');
         });
         req.on('end',function(){
           //writeLog(query);
-          writeLog(String(datosLectura.dev_id));
-          if(String(datosLectura.dev_id[0])=="S"){
-            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,datetime) VALUES ("'+datosLectura.dev_id+'",'+datosLectura.a+','+datosLectura.b+','+datosLectura.c+', (NOW()-INTERVAL 5 HOUR));');
+          writeLog(String(readPostData.dev_id));
+          if(String(readPostData.dev_id[0])=="S"){
+            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,datetime) VALUES ("'+readPostData.dev_id+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
           }
           else{
             writeLog('Parameters not found.');
@@ -128,12 +128,6 @@ http.createServer(function(req,res){
         res.write('~HI');
         res.end();
       }
-      //setTimeout(function(){console.log(orders_queue)},1000);
-    break;
-    case '/update':
-      if(req.method=='POST'){
-        
-      }
     break;
     case '/getqueue':
       if(req.method=='GET'){
@@ -147,7 +141,32 @@ http.createServer(function(req,res){
           res.write('~HALT');
           res.end();
         }
-        //setTimeout(function(){console.log(orders_queue)},1000);
+      }
+    break;
+    case '/update':
+      if(req.method=='POST'){
+        req.on('data',function(chunk){
+          readPostData = qs.parse(String(chunk));
+          writeLog('Recieved data from cerebroU');
+        });
+        req.on('end',function(){
+          if(String(readPostData.dev_id[0])=="T"){
+            handleDB('INSERT INTO cu_lecturas (id_dev,a,b,c,datetime) VALUES ("'+readPostData.dev_id+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
+          }
+          else if(String(readPostData.dev_id[0])=="S"){
+            if(readPostData.A=="N"){
+              handleDB('UPDATE cu_devices set A="ON" WHERE id='+readPostData.dev_id);
+            }else if(readPostData.A="M"){
+              handleDB('UPDATE cu_devices set A="OFF" WHERE id='+readPostData.dev_id);
+            }
+            else if(readPostData.J="1"){
+              handleDB('UPDATE cu_devices set A="DEAD" WHERE id='+readPostData.dev_id);
+            }
+          }
+          else{
+            writeLog('Device not found.');
+          }
+        });
       }
     break;
     default:
