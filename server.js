@@ -121,8 +121,9 @@ http.createServer(function(req,res){
         query = 'SELECT id FROM cu_devices WHERE type="W";';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
-            enqueue(orders_queue,query_res[j].id);
-            console.log(query_res[j].id);
+            enqueue(orders_queue,query_res[j].id+'D',function{
+              console.log(orders_queue);
+            });
           }
         });
       }
