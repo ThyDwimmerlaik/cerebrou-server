@@ -128,12 +128,17 @@ http.createServer(function(req,res){
       setTimeout(function(){console.log(orders_queue)},1000);
     break;
     case '/update':
+      if(req.method=='POST'){
+        
+      }
     break;
     case '/getqueue':
-      writeLog('[INFO] Hand-seted parameters.');
-      res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.end('#'+dequeue(orders_queue)+'&');
-      setTimeout(function(){console.log(orders_queue)},1000);
+      if(req.method=='POST'){
+        writeLog('[INFO] Hand-seted parameters.');
+        res.writeHead(200,'OK',{'Content-Type':'text/html'});
+        res.end('#'+dequeue(orders_queue)+'&');
+        setTimeout(function(){console.log(orders_queue)},1000);
+      }
     break;
     case '/shiftqueue':
     default:
@@ -154,6 +159,10 @@ function enqueue(queue,element){
 }
 
 function dequeue(queue){
-  writeLog('Wipped '+element+' from the queue.');
-  return queue.shift();
+  if(queue.length>0){
+    writeLog('Wipped '+queue[0]+' from the queue.');
+    return queue.shift();
+  }else{
+    writeLog('Error: No elements on the queue.');
+  }
 }
