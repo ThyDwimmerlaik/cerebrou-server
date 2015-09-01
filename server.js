@@ -148,6 +148,7 @@ function FirstFillQueue(queue){
   var C = handleDB(query1);
   for(var i=0;i<C;i++){
     enqueue(orders_queue,hold[i]);
+    console.log(hold[i]);
   }
 }
 
