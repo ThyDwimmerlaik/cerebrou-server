@@ -192,14 +192,10 @@ function checkReadDevices(){
   var n_to = new Date();
   for(var i in timeoutDevices){
     var n_to = timeoutDevices[i].last.setSeconds(timeoutDevices[i].last.getSeconds()+timeoutDevices[i].timeout);
-    if(x > n_to)){
+    if(x >= n_to){
       enqueue(orders_queue,timeoutDevices[i].id+'D');
       array[i].last = x;
       writeLog('Enqueuing '+timeoutDevices[i].id);
     }
-    console.log('X: '+x);
-    console.log('new: '+n_to);
-    var w = x-n_to;
-    console.log('x-new: '+w);
   }
 }
