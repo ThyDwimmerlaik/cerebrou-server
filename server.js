@@ -9,6 +9,8 @@ var query='';
 
 var orders_queue = [];
 
+var timeoutDevices = [][];
+
 var pool = mysql.createPool({
   connectionLimit :   100,
   host :              conn.host,
@@ -117,16 +119,23 @@ http.createServer(function(req,res){
     */
     case '/hello':
       if(req.method=='POST'){
+        var k = 0;
         writeLog('Recieved hail');
-        query = 'SELECT id FROM cu_devices WHERE type="W";';
+        query = 'SELECT id,type,A FROM cu_devices;';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
+            if(query_res[j].type=="R" || query_res[j].type=="M"){
+              timeoutDevices[k][0]=query_res[j].id;
+              timeoutDevices[k][1]=query_res[j].A;
+              k+=1;
+            }
           }
         });
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
         res.write('~HI');
         res.end();
+        console.log(timeoutDevices);
       }
     break;
     case '/getqueue':
@@ -158,13 +167,13 @@ http.createServer(function(req,res){
             res.end();
           }
           else if(String(readPostData.id_dev[0])=="S"){
-            if(readPostData.A=="N"){
-              handleDB('UPDATE cu_devices SET A="ON" WHERE id="'+readPostData.id_dev+'";');
+            if(readPostData.B=="N"){
+              handleDB('UPDATE cu_devices SET B="ON" WHERE id="'+readPostData.id_dev+'";');
             }else if(readPostData.A="M"){
-              handleDB('UPDATE cu_devices SET A="OFF" WHERE id="'+readPostData.id_dev+'";');
+              handleDB('UPDATE cu_devices SET B="OFF" WHERE id="'+readPostData.id_dev+'";');
             }
             else if(readPostData.J="1"){
-              handleDB('UPDATE cu_devices SET A="DEAD" WHERE id="'+readPostData.id_dev+'";');
+              handleDB('UPDATE cu_devices SET B="DEAD" WHERE id="'+readPostData.id_dev+'";');
             }
             res.writeHead(200,'OK',{'Content-Type':'text/html'});
             res.write('~COPY');
@@ -204,3 +213,4 @@ function dequeue(queue){
     writeLog('Error: No elements on the queue.');
   }
 }
+
