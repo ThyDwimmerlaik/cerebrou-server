@@ -117,15 +117,18 @@ http.createServer(function(req,res){
     */
     case '/hello':
       if(req.method=='POST'){
-        writeLog('Recieved hail 卐');
+        writeLog('Recieved hail');
         query = 'SELECT id FROM cu_devices WHERE type="W";';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
           }
         });
+        res.writeHead(200,'OK',{'Content-Type':'text/html'});
+        res.write('~HI');
+        res.end();
       }
-      setTimeout(function(){console.log(orders_queue)},1000);
+      //setTimeout(function(){console.log(orders_queue)},1000);
     break;
     case '/update':
       if(req.method=='POST'){
@@ -133,7 +136,7 @@ http.createServer(function(req,res){
       }
     break;
     case '/getqueue':
-      if(req.method=='POST'){
+      if(req.method=='GET'){
         if(orders_queue.length > 0){
           var current_order = dequeue(orders_queue);
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
@@ -141,10 +144,10 @@ http.createServer(function(req,res){
           res.end();
         }else{
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.write('^_^');
+          res.write('~HALT');
           res.end();
         }
-        setTimeout(function(){console.log(orders_queue)},1000);
+        //setTimeout(function(){console.log(orders_queue)},1000);
       }
     break;
     default:
