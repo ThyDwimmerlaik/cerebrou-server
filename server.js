@@ -125,10 +125,17 @@ http.createServer(function(req,res){
           }
         });
       }
+      setTimeout(function(){console.log(orders_queue)},1000);
     break;
     case '/update':
-
     break;
+    case '/getqueue':
+      writeLog('[INFO] Hand-seted parameters.');
+      res.writeHead(200,'OK',{'Content-Type':'text/html'});
+      res.end('#'+dequeue(orders_queue)+'&');
+      setTimeout(function(){console.log(orders_queue)},1000);
+    break;
+    case '/shiftqueue':
     default:
       writeLog('[404] '+req.method+' to '+req.url);
       res.writeHead('404','Not found',{'Content-Type':'text/html'});
@@ -142,11 +149,11 @@ http.createServer(function(req,res){
   });
 
 function enqueue(queue,element){
-  console.log(queue);
+  writeLog('Added '+element+' to the queue.');
   queue.push(element);
 }
 
 function dequeue(queue){
-  console.log(queue);
+  writeLog('Wipped '+element+' from the queue.');
   return queue.shift();
 }
