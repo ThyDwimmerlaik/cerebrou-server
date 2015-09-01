@@ -4,9 +4,11 @@ var qs = require('querystring')
 var fs = require('fs');
 var conn = require('../db/connection.json');
 
-var datosLectura;
+var datosRecibidos;
 var query='';
 var dataResult;
+
+var orders_queue = [];
 
 var pool = mysql.createPool({
   connectionLimit :   100,
@@ -58,7 +60,6 @@ function handleDB(req,res,q){
         else{
           writeLog('Data query and inserted successfully!');
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.writeLog(q);
           res.end();
         }
       }
@@ -76,6 +77,7 @@ function handleDB(req,res,q){
 
 http.createServer(function(req,res){
   switch(req.url){
+    
     case '/':
       writeLog('[INFO] Hand-seted parameters.');
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
@@ -89,6 +91,7 @@ http.createServer(function(req,res){
       res.write('</form></body></html>');
       res.end();
     break;
+    /*
     case '/getdata':
       if(req.method=='POST'){
         req.on('data',function(chunk){
@@ -99,7 +102,7 @@ http.createServer(function(req,res){
           //writeLog(query);
           writeLog(String(datosLectura.dev_id));
           if(String(datosLectura.dev_id[0])=="S"){
-            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,datetime) VALUES ('"+datosLectura.dev_id+"','+datosLectura.a+','+datosLectura.b+','+datosLectura.c+', (NOW()-INTERVAL 5 HOUR));');
+            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,datetime) VALUES ("'+datosLectura.dev_id+'",'+datosLectura.a+','+datosLectura.b+','+datosLectura.c+', (NOW()-INTERVAL 5 HOUR));');
           }
           else{
             writeLog('Parameters not found.');
@@ -116,6 +119,16 @@ http.createServer(function(req,res){
     case '/getdisp':
       handleDB(req,res,'SELECT id FROM cerebrou_devices;');
     break;
+    */
+    case '/hello':
+      if(req.method=='POST'){
+        writeLog('Recieved hail');
+        FirstFillQueue(orders_queue);        
+      }
+    break;
+    case '/update':
+
+    break;
     default:
       writeLog('[404] '+req.method+' to '+req.url);
       res.writeHead('404','Not found',{'Content-Type':'text/html'});
@@ -127,3 +140,23 @@ http.createServer(function(req,res){
   else
     writeLog('[INFO] '+err.message);
   });
+
+function enqueue(queue,element){
+  queue.push(element);
+}
+
+function dequeue(queue){
+  return queue.shift();
+}
+
+function FirstFillQueue(queue){
+  var query1='SELECT COUNT(*) FROM cu_devices where type="W";';
+  var query2='SELECT id FROM cu_devices where type="W";';
+  var hold = [];
+  hold = handleDB(req,res,query2);
+  var C = handleDB(req,res,query);
+  for(var i=0;i<C;i++){
+    enqueue(orders_queue,hold[i]);
+  }
+}
+
