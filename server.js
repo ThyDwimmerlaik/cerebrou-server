@@ -151,17 +151,17 @@ http.createServer(function(req,res){
           console.log(readPostData);
         });
         req.on('end',function(){
-          if(String(readPostData.dev_id[0])=="T"){
-            handleDB('INSERT INTO cu_lecturas (id_dev,a,b,c,datetime) VALUES ("'+readPostData.dev_id+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
+          if(String(readPostData.id_dev[0])=="T"){
+            handleDB('INSERT INTO cu_lecturas (id_dev,a,b,c,datetime) VALUES ("'+readPostData.id_dev+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
           }
-          else if(String(readPostData.dev_id[0])=="S"){
+          else if(String(readPostData.id_dev[0])=="S"){
             if(readPostData.A=="N"){
-              handleDB('UPDATE TABLE cu_devices SET A="ON" WHERE id="'+readPostData.dev_id'";');
+              handleDB('UPDATE TABLE cu_devices SET A="ON" WHERE id="'+readPostData.id_dev+'";');
             }else if(readPostData.A="M"){
-              handleDB('UPDATE TABLE cu_devices SET A="OFF" WHERE id="'+readPostData.dev_id'";');
+              handleDB('UPDATE TABLE cu_devices SET A="OFF" WHERE id="'+readPostData.id_dev+'";');
             }
             else if(readPostData.J="1"){
-              handleDB('UPDATE TABLE cu_devices SET A="DEAD" WHERE id="'+readPostData.dev_id'";');
+              handleDB('UPDATE TABLE cu_devices SET A="DEAD" WHERE id="'+readPostData.id_dev+'";');
             }
           }
           else{
