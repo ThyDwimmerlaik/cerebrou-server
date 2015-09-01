@@ -1,6 +1,6 @@
 var http = require('http');
 var mysql = require('mysql');
-var qs = require('querystring')
+var qs = require('querystring');
 var fs = require('fs');
 var conn = require('../db/connection.json');
 
