@@ -189,12 +189,13 @@ function dequeue(queue){
 }
 
 function checkReadDevices(){
-  var a;
-  var b = new Date();
+  var cd = new Date();
   for(var i in timeoutDevices){
-    a = timeoutDevices[i].last;
-    b = timeoutDevices[i].last;
-    console.log('a: '+a);
-    console.log('b: '+b);
+    var nd = timeoutDevices[i].last.setSeconds(timeoutDevices[i].last.getSeconds()+timeoutDevices[i].timeout);
+    if(cd > nd){
+      writeLog('Enqueued device '+timeoutDevices[i].id);
+      enqueue(orders_queue,timeoutDevices[i].id+'D');
+      timeoutDevices[i].last = cd;
+    }
   }
 }
