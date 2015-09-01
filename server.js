@@ -6,7 +6,6 @@ var conn = require('../db/connection.json');
 
 var datosRecibidos;
 var query='';
-var dataResult;
 
 var orders_queue = [];
 
@@ -34,7 +33,7 @@ function writeLog(message){
   });
 }
 
-function handleDB(q){
+function handleDB(q,callback){
   pool.getConnection(function(err,connection){
     if(err){
       connection.release();
@@ -42,16 +41,16 @@ function handleDB(q){
       return;
     }
     writeLog('Connected to DB as id: '+connection.threadId);
-    connection.query(q,function(err,rows){
+    connection.query(q,function(err,rows,fields){
       connection.release();
       if(!err){
         if(rows.length > 0){
-          var stringRows = [];
-          for (var i=0;i<rows.length;i++){
-            stringRows[i] = String(rows[i].id);
+          var RowsFields = [];
+          for (var i in rows){
+            RowsFields[i] = rows[i];
           }
           writeLog('Data query and printed successfully!');
-          return stringRows;
+          callback(RowsFields);
         }
         else{
           writeLog('Data query and inserted successfully!');
@@ -119,7 +118,13 @@ http.createServer(function(req,res){
     case '/hello':
       if(req.method=='POST'){
         writeLog('Recieved hail');
-        FirstFillQueue(orders_queue);        
+        query = 'SELECT id FROM cu_devices WHERE type="W";';
+        handleDB(query,function(query_res){
+          for(var j=0;j<query_res.length;j++){
+            enqueue(orders_queue,query_res[j].id);
+            console.log(query_res[j].id);
+          }
+        });
       }
     break;
     case '/update':
@@ -144,15 +149,3 @@ function enqueue(queue,element){
 function dequeue(queue){
   return queue.shift();
 }
-
-function FirstFillQueue(queue){
-  var query1='SELECT COUNT(*) FROM cu_devices where type="W";';
-  var query2='SELECT id FROM cu_devices where type="W";';
-  var C = handleDB(query1);
-  console.log(C);
-  //for(var i=0;i<C;i++){
-  //  enqueue(orders_queue,hold[i]);
-  //  console.log(hold[i]);
-  //}
-}
-
