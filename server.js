@@ -134,14 +134,13 @@ http.createServer(function(req,res){
     break;
     case '/getqueue':
       if(req.method=='POST'){
-        writeLog('[INFO] Hand-seted parameters.');
+        var current_order = dequeue(orders_queue);
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.end('#'+dequeue(orders_queue)+'&');
+        res.write('#'+current_order+'&');
+        res.end();
         setTimeout(function(){console.log(orders_queue)},1000);
       }
     break;
-    case '/shiftqueue':
-    default:
       writeLog('[404] '+req.method+' to '+req.url);
       res.writeHead('404','Not found',{'Content-Type':'text/html'});
       res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
