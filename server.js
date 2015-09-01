@@ -117,7 +117,7 @@ http.createServer(function(req,res){
     */
     case '/hello':
       if(req.method=='POST'){
-        writeLog('Recieved hail');
+        writeLog('Recieved hail 卐');
         query = 'SELECT id FROM cu_devices WHERE type="W";';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
@@ -147,6 +147,7 @@ http.createServer(function(req,res){
         setTimeout(function(){console.log(orders_queue)},1000);
       }
     break;
+    default:
       writeLog('[404] '+req.method+' to '+req.url);
       res.writeHead('404','Not found',{'Content-Type':'text/html'});
       res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
