@@ -34,13 +34,11 @@ function writeLog(message){
   });
 }
 
-function handleDB(req,res,q){
+function handleDB(q){
   pool.getConnection(function(err,connection){
     if(err){
       connection.release();
       writeLog(err.message);
-      res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
-      res.end();
       return;
     }
     writeLog('Connected to DB as id: '+connection.threadId);
@@ -53,14 +51,9 @@ function handleDB(req,res,q){
             stringRows[i] = String(rows[i].id);
           }
           writeLog('Data query and printed successfully!');
-          res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.write('#'+String(stringRows)+'&');
-          res.end();
         }
         else{
           writeLog('Data query and inserted successfully!');
-          res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.end();
         }
       }
       else writeLog(err.message);
@@ -68,8 +61,6 @@ function handleDB(req,res,q){
     connection.on('error', function(err) {      
       connection.release();
       writeLog(err.message);
-      res.writeHead(100,'Error in connection database',{'Content-Type':'text/html'});
-      res.end();
       return;
     });
   });
@@ -153,8 +144,8 @@ function FirstFillQueue(queue){
   var query1='SELECT COUNT(*) FROM cu_devices where type="W";';
   var query2='SELECT id FROM cu_devices where type="W";';
   var hold = [];
-  hold = handleDB(req,res,query2);
-  var C = handleDB(req,res,query);
+  hold = handleDB(query2);
+  var C = handleDB(query1);
   for(var i=0;i<C;i++){
     enqueue(orders_queue,hold[i]);
   }
