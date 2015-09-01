@@ -51,12 +51,17 @@ function handleDB(q){
             stringRows[i] = String(rows[i].id);
           }
           writeLog('Data query and printed successfully!');
+          return stringRows;
         }
         else{
           writeLog('Data query and inserted successfully!');
+          return;
         }
       }
-      else writeLog(err.message);
+      else{
+        writeLog(err.message);
+        return;
+      }
     });
     connection.on('error', function(err) {      
       connection.release();
