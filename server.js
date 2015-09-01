@@ -114,12 +114,13 @@ http.createServer(function(req,res){
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+current_order+'&');
           res.end();
+          checkReadDevices(timeoutDevices);
         }else{
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('~EMPTY');
           res.end();
+          checkReadDevices(timeoutDevices);
         }
-        checkReadDevices(timeoutDevices);
       }
     break;
     case '/update':
@@ -188,14 +189,12 @@ function dequeue(queue){
 }
 
 function checkReadDevices(){
-  var x = new Date();
-  var n_to = new Date();
+  var a;
+  var b = new Date();
   for(var i in timeoutDevices){
-    var n_to = timeoutDevices[i].last.setSeconds(timeoutDevices[i].last.getSeconds()+timeoutDevices[i].timeout);
-    if(x >= n_to){
-      enqueue(orders_queue,timeoutDevices[i].id+'D');
-      array[i].last = x;
-      writeLog('Enqueuing '+timeoutDevices[i].id);
-    }
+    a = timeoutDevices[i].last;
+    b = timeoutDevices[i].last;
+    console.log('a: '+a);
+    console.log('b: '+b);
   }
 }
