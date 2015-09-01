@@ -9,7 +9,7 @@ var query='';
 
 var orders_queue = [];
 
-var timeoutDevices = [][];
+var timeoutDevices = [];
 
 var pool = mysql.createPool({
   connectionLimit :   100,
@@ -88,35 +88,6 @@ http.createServer(function(req,res){
       res.write('</form></body></html>');
       res.end();
     break;
-    /*
-    case '/getdata':
-      if(req.method=='POST'){
-        req.on('data',function(chunk){
-          readPostData = qs.parse(String(chunk));
-          writeLog('Recieved data');
-        });
-        req.on('end',function(){
-          //writeLog(query);
-          writeLog(String(readPostData.dev_id));
-          if(String(readPostData.dev_id[0])=="S"){
-            handleDB(req,res,'INSERT INTO cerebrou_lecturas (id_dev,a,b,c,datetime) VALUES ("'+readPostData.dev_id+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
-          }
-          else{
-            writeLog('Parameters not found.');
-            res.writeHead('405','Method not supported',{'Content-Type':'text/html'});
-            res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
-          }
-        });
-      }else{
-        writeLog('Parameters not found.');
-        res.writeHead('405','Method not supported',{'Content-Type':'text/html'});
-        res.end('<html><head><title>ERROR</title></head><body><h1>NOT SUPPORTED</h1></body></html>');
-      }
-    break;
-    case '/getdisp':
-      handleDB(req,res,'SELECT id FROM cerebrou_devices;');
-    break;
-    */
     case '/hello':
       if(req.method=='POST'){
         var k = 0;
@@ -126,8 +97,7 @@ http.createServer(function(req,res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
             if(query_res[j].type=="R" || query_res[j].type=="M"){
-              timeoutDevices[k][0]=query_res[j].id;
-              timeoutDevices[k][1]=query_res[j].A;
+              timeoutDevices[k] == {id:query_res[j].id,timeout:query_res[j].A};
               k+=1;
             }
           }
