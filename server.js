@@ -190,7 +190,7 @@ function dequeue(queue){
 function checkReadDevices(array){
   var x = new Date();
   for(var i in array){
-    if(x > array.l.setSeconds(array.l.getSeconds()+array.l.timeout)){
+    if(x > array[i].l.setSeconds(array[i].l.getSeconds()+array[i].timeout)){
       writeLog('Timeout of device '+array.l.id);
     }
   }
