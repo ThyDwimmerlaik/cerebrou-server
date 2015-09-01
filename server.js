@@ -135,9 +135,15 @@ http.createServer(function(req,res){
     case '/getqueue':
       if(req.method=='POST'){
         var current_order = dequeue(orders_queue);
-        res.writeHead(200,'OK',{'Content-Type':'text/html'});
-        res.write('#'+current_order+'&');
-        res.end();
+        if(current_order != NULL){
+          res.writeHead(200,'OK',{'Content-Type':'text/html'});
+          res.write('#'+current_order+'&');
+          res.end();
+        }else{
+          res.writeHead(200,'OK',{'Content-Type':'text/html'});
+          res.write('^_^');
+          res.end();
+        }
         setTimeout(function(){console.log(orders_queue)},1000);
       }
     break;
