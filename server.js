@@ -134,8 +134,8 @@ http.createServer(function(req,res){
     break;
     case '/getqueue':
       if(req.method=='POST'){
-        var current_order = dequeue(orders_queue);
-        if(current_order != NULL){
+        if(orders_queue.length > 0){
+          var current_order = dequeue(orders_queue);
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+current_order+'&');
           res.end();
