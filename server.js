@@ -116,7 +116,7 @@ http.createServer(function(req,res){
           res.end();
         }else{
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
-          res.write('~HALT');
+          res.write('~EMPTY');
           res.end();
         }
         checkReadDevices(timeoutDevices);
@@ -187,12 +187,13 @@ function dequeue(queue){
   }
 }
 
-function checkReadDevices(array){
+function checkReadDevices(){
   var x = new Date();
-  for(var i in array){
-    if(x > array[i].last.setSeconds(array[i].last.getSeconds()+array[i].timeout)){
-      enqueue(orders_queue,array[i].id+'D');
+  for(var i in timeoutDevices){
+    if(x > timeoutDevices[i].last.setSeconds(timeoutDevices[i].last.getSeconds()+timeoutDevices[i].timeout)){
+      enqueue(orders_queue,timeoutDevices[i].id+'D');
       array[i].last = x;
+      writeLog('Enqueuing '+timeoutDevices[i].id);
     }
   }
 }
