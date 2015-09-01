@@ -148,6 +148,7 @@ http.createServer(function(req,res){
         req.on('data',function(chunk){
           readPostData = qs.parse(String(chunk));
           writeLog('Recieved data from cerebroU');
+          console.log(readPostData);
         });
         req.on('end',function(){
           if(String(readPostData.dev_id[0])=="T"){
