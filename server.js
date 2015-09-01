@@ -153,19 +153,28 @@ http.createServer(function(req,res){
         req.on('end',function(){
           if(String(readPostData.id_dev[0])=="T"){
             handleDB('INSERT INTO cu_lecturas (id_dev,a,b,c,datetime) VALUES ("'+readPostData.id_dev+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
+            res.writeHead(200,'OK',{'Content-Type':'text/html'});
+            res.write('~COPY');
+            res.end();
           }
           else if(String(readPostData.id_dev[0])=="S"){
             if(readPostData.A=="N"){
-              handleDB('UPDATE TABLE cu_devices SET A="ON" WHERE id="'+readPostData.id_dev+'";');
+              handleDB('UPDATE cu_devices SET A="ON" WHERE id="'+readPostData.id_dev+'";');
             }else if(readPostData.A="M"){
-              handleDB('UPDATE TABLE cu_devices SET A="OFF" WHERE id="'+readPostData.id_dev+'";');
+              handleDB('UPDATE cu_devices SET A="OFF" WHERE id="'+readPostData.id_dev+'";');
             }
             else if(readPostData.J="1"){
-              handleDB('UPDATE TABLE cu_devices SET A="DEAD" WHERE id="'+readPostData.id_dev+'";');
+              handleDB('UPDATE cu_devices SET A="DEAD" WHERE id="'+readPostData.id_dev+'";');
             }
+            res.writeHead(200,'OK',{'Content-Type':'text/html'});
+            res.write('~COPY');
+            res.end();
           }
           else{
             writeLog('Device not found.');
+            res.writeHead(200,'OK',{'Content-Type':'text/html'});
+            res.write('~LOST');
+            res.end();
           }
         });
       }
