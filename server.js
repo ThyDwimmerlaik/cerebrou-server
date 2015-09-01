@@ -156,12 +156,12 @@ http.createServer(function(req,res){
           }
           else if(String(readPostData.dev_id[0])=="S"){
             if(readPostData.A=="N"){
-              handleDB('UPDATE cu_devices set A="ON" WHERE id='+readPostData.dev_id);
+              handleDB('UPDATE TABLE cu_devices SET A="ON" WHERE id="'+readPostData.dev_id'";');
             }else if(readPostData.A="M"){
-              handleDB('UPDATE cu_devices set A="OFF" WHERE id='+readPostData.dev_id);
+              handleDB('UPDATE TABLE cu_devices SET A="OFF" WHERE id="'+readPostData.dev_id'";');
             }
             else if(readPostData.J="1"){
-              handleDB('UPDATE cu_devices set A="DEAD" WHERE id='+readPostData.dev_id);
+              handleDB('UPDATE TABLE cu_devices SET A="DEAD" WHERE id="'+readPostData.dev_id'";');
             }
           }
           else{
