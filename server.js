@@ -143,12 +143,11 @@ function dequeue(queue){
 function FirstFillQueue(queue){
   var query1='SELECT COUNT(*) FROM cu_devices where type="W";';
   var query2='SELECT id FROM cu_devices where type="W";';
-  var hold = [];
-  hold = handleDB(query2);
   var C = handleDB(query1);
-  for(var i=0;i<C;i++){
-    enqueue(orders_queue,hold[i]);
-    console.log(hold[i]);
-  }
+  console.log(C);
+  //for(var i=0;i<C;i++){
+  //  enqueue(orders_queue,hold[i]);
+  //  console.log(hold[i]);
+  //}
 }
 
