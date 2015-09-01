@@ -97,7 +97,7 @@ http.createServer(function(req,res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
             if(query_res[j].type=="R" || query_res[j].type=="M"){
-              timeoutDevices[k] == {id:query_res[j].id,timeout:query_res[j].A};
+              timeoutDevices[k] = {id:query_res[j].id,timeout:query_res[j].A};
               k+=1;
             }
           }
@@ -105,7 +105,6 @@ http.createServer(function(req,res){
         res.writeHead(200,'OK',{'Content-Type':'text/html'});
         res.write('~HI');
         res.end();
-        console.log(timeoutDevices);
       }
     break;
     case '/getqueue':
@@ -157,6 +156,9 @@ http.createServer(function(req,res){
           }
         });
       }
+    break;
+    case '/test':
+      console.log(timeoutDevices);
     break;
     default:
       writeLog('[404] '+req.method+' to '+req.url);
