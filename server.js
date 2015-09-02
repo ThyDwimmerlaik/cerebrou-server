@@ -171,11 +171,10 @@ setInterval(function(){
   if(timeoutDevices.length>0){
     var cd = new Date();
     for(var m in timeoutDevices){
-      var nd = new Date();
-      nd = timeoutDevices[m].last+(timeoutDevices[m].timeout*1000);
-      //console.log('CD['+m+']: '+Number(cd));
-      //console.log('ND['+m+']: '+nd);
-      if(cd<nd) console.log('AAAAAA'); else console.log('BBBBBB');
+      var nd = Number(timeoutDevices[m].last)+(timeoutDevices[m].timeout*1000);
+      if(Number(cd)>Number(nd)){
+        console.log('AAAAAA');
+      }
     }
   }
 }, 1500);
