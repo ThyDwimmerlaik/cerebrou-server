@@ -97,7 +97,7 @@ http.createServer(function(req,res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
             if(query_res[j].type=="R" || query_res[j].type=="M"){
-              timeoutDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
+              timeoutDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date(),next:new Date().setSeconds(new Date().getSeconds()+query_res[j].A)};
               k+=1;
             }
           }
@@ -191,11 +191,12 @@ function dequeue(queue){
 function checkReadDevices(){
   var cd = new Date();
   for(var i in timeoutDevices){
-    var nd = timeoutDevices[i].last.setSeconds(timeoutDevices[i].last.getSeconds()+timeoutDevices[i].timeout);
+    var nd = timeoutDevices[i].next;
     if(cd > nd){
       writeLog('Enqueued device '+timeoutDevices[i].id);
       enqueue(orders_queue,timeoutDevices[i].id+'D');
-      timeoutDevices[i].last = cd;
+      timeoutDevices[i].last = timeoutDevices[i].next;
+      timeoutDevices[i].next = new Date().setSeconds(new Date().getSeconds()+timeoutDevices[i].timeout);
     }
   }
 }
