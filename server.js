@@ -8,8 +8,8 @@ var readPostData;
 var query='';
 
 var orders_queue = [];
-
-var timeoutDevices = [];
+var readDevices = [];
+var writeDevices = [];
 
 var pool = mysql.createPool({
   connectionLimit :   100,
@@ -82,6 +82,7 @@ http.createServer(function(req,res){
     case '/hello':
       if(req.method=='POST'){
         var k = 0;
+        var l = 0;
         orders_queue=[];
         writeLog('Recieved hail');
         query = 'SELECT id,type,A FROM cu_devices;';
@@ -89,8 +90,11 @@ http.createServer(function(req,res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
             if(query_res[j].type=="R" || query_res[j].type=="M"){
-              timeoutDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
+              readDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
               k+=1;
+            }else if(query_res[j].type=="W" || query_res[j].type=="M"){
+              writeDevices[l] = {id:query_res[j].id,A:query_res[j].A};
+              l+=1;
             }
           }
         });
@@ -151,6 +155,8 @@ http.createServer(function(req,res){
     break;
     case '/test':
       console.log(orders_queue);
+      console.log(readDevices);
+      console.log(writeDevices);
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
       res.end();
     break;
@@ -168,27 +174,41 @@ http.createServer(function(req,res){
 
 
 setInterval(function(){
-  if(timeoutDevices.length>0){
+  if(readDevices.length>0){
     var cd = new Date();
-    for(var m in timeoutDevices){
-      var nd = Number(timeoutDevices[m].last)+(timeoutDevices[m].timeout*1000);
+    for(var m in readDevices){
+      var nd = Number(readDevices[m].last)+(readDevices[m].timeout*1000);
       if(Number(cd)>Number(nd)){
-        enqueue(orders_queue,timeoutDevices[m].id+'D');
-        timeoutDevices[m].last = new Date();
+        enqueue(orders_queue,readDevices[m].id+'D');
+        readDevices[m].last = new Date();
       }
     }
   }
 }, 1500);
 
+/*
+setInterval(function(){
+  if(writeDevices.length>0){
+    for(var m in writeDevices){
+     
+    }
+  }
+}, 1500);
+*/
 
 function enqueue(queue,element){
-  writeLog('Added '+element+' to the queue.');
+  writeLog('Pushed '+element+' to the queue.');
   queue.push(element);
+}
+
+function unshift(queue,element){
+  writeLog('Unshifted '+element+' to the queue.');
+  queue.unshift(element);
 }
 
 function dequeue(queue){
   if(queue.length>0){
-    writeLog('Wipped '+queue[0]+' from the queue.');
+    writeLog('Shifted '+queue[0]+' from the queue.');
     return queue.shift();
   }else{
     writeLog('Error: No elements on the queue.');
