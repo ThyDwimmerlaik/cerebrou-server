@@ -186,19 +186,22 @@ setInterval(function(){
   }
 }, 5000);
 
-setInterval(
-  handleDB('SELECT id,A FROM cu_devices WHERE type = "W";',function(query_res){
-    for(var n in query_res){
-      for(var o in writeDevices){
-        if(query_res[n].id==writeDevices[o].id){
-          A_d = writeDevices[n].A;
-          A_q = String(query_res[n].A);
-          console.log(A_d);
-          console.log(A_q);
+setInterval(function(){
+  if(writeDevices.length>0){
+    handleDB('SELECT id,A FROM cu_devices WHERE type = "W";',function(query_res){
+      for(var n in query_res){
+        for(var o in writeDevices){
+          if(query_res[n].id==writeDevices[o].id){
+            A_d = writeDevices[n].A;
+            A_q = String(query_res[n].A);
+            console.log(A_d);
+            console.log(A_q);
+          }
         }
       }
-    }
-  }),800);
+    })
+  }
+},800);
 
 
 function enqueue(queue,element){
