@@ -114,12 +114,10 @@ http.createServer(function(req,res){
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+current_order+'&');
           res.end();
-          checkReadDevices(timeoutDevices);
         }else{
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('~EMPTY');
           res.end();
-          checkReadDevices(timeoutDevices);
         }
       }
     break;
@@ -187,17 +185,5 @@ function dequeue(queue){
     return queue.shift();
   }else{
     writeLog('Error: No elements on the queue.');
-  }
-}
-
-function checkReadDevices(){
-  var cd = new Date();
-  for(var i in timeoutDevices){
-    var nd = timeoutDevices[i].last+(timeoutDevices[i].timeout*1000);
-    if(cd > nd){
-      writeLog('Enqueued device '+timeoutDevices[i].id);
-      enqueue(orders_queue,timeoutDevices[i].id+'D');
-      timeoutDevices[i].last = new Date();
-    }
   }
 }
