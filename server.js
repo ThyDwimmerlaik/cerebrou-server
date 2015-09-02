@@ -113,7 +113,9 @@ http.createServer(function(req,res){
           var current_order = dequeue(orders_queue);
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+current_order+'&');
-          res.end();
+          res.end(function(){
+            console.log('callback');
+          });
         }else{
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('~EMPTY');
