@@ -184,7 +184,7 @@ setInterval(function(){
       }
     }
   }
-}, 10000);
+}, 5000);
 
 setInterval(function(){
   if(writeDevices.length>0){
@@ -231,7 +231,9 @@ function dequeue(queue){
 
 function searchQueue(queue,element){
   for(var x in queue){
-    if(element==queue[x]){return true;}
-    return false;
+    if(element==queue[x]){
+      return true;
+    }
   }
+  return false;
 }
