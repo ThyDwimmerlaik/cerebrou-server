@@ -166,11 +166,19 @@ http.createServer(function(req,res){
     writeLog('[INFO] '+err.message);
   });
 
-/*
-setInterval(function(){
 
+setInterval(function(){
+  if(timeoutDevices.length>0){
+    var cd = new Date();
+    for(var m in timeoutDevices){
+      var nd = new Date();
+      nd = Number(timeoutDevices[m].last)+(timeoutDevices[m].timeout*1000);
+      console.log(cd);
+      console.log(nd);
+    }
+  }
 }, 1500);
-*/
+
 
 function enqueue(queue,element){
   writeLog('Added '+element+' to the queue.');
