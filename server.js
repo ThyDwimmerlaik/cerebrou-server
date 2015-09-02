@@ -150,7 +150,7 @@ http.createServer(function(req,res){
       }
     break;
     case '/test':
-      console.log(timeoutDevices);
+      console.log(orders_queue);
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
       res.end();
     break;
@@ -173,7 +173,8 @@ setInterval(function(){
     for(var m in timeoutDevices){
       var nd = Number(timeoutDevices[m].last)+(timeoutDevices[m].timeout*1000);
       if(Number(cd)>Number(nd)){
-        console.log('AAAAAA');
+        enqueue(orders_queue,timeoutDevices[m].id);
+        timeoutDevices[m].last = new Date();
       }
     }
   }
