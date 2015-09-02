@@ -184,7 +184,7 @@ setInterval(function(){
       }
     }
   }
-}, 5000);
+}, 10000);
 
 setInterval(function(){
   if(writeDevices.length>0){
@@ -194,14 +194,18 @@ setInterval(function(){
           if(query_res[n].id==writeDevices[o].id){
             B_d = writeDevices[n].B;
             B_q = String(query_res[n].B);
-            console.log(B_d);
-            console.log(B_q);
+            if(B_d=='OFF' && B_q=='ON'){
+              enqueue(orders_queue,writeDevices[o].id+'N');
+            }
+            else if(B_d=='ON' && B_q=='OFF'){
+              enqueue(orders_queue,writeDevices[o].id+'M');
+            }
           }
         }
       }
     })
   }
-},1200);
+},1500);
 
 
 function enqueue(queue,element){
