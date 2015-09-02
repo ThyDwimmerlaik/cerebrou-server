@@ -85,7 +85,7 @@ http.createServer(function(req,res){
         var l = 0;
         orders_queue=[];
         writeLog('Recieved hail');
-        query = 'SELECT id,type,A FROM cu_devices;';
+        query = 'SELECT id,type,A,B FROM cu_devices;';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
@@ -93,7 +93,7 @@ http.createServer(function(req,res){
               readDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
               k+=1;
             }else if(query_res[j].type=="W" || query_res[j].type=="M"){
-              writeDevices[l] = {id:query_res[j].id,A:String(query_res[j].A)};
+              writeDevices[l] = {id:query_res[j].id,B:String(query_res[j].B)};
               l+=1;
             }
           }
@@ -188,20 +188,20 @@ setInterval(function(){
 
 setInterval(function(){
   if(writeDevices.length>0){
-    handleDB('SELECT id,A FROM cu_devices WHERE type = "W";',function(query_res){
+    handleDB('SELECT id,B FROM cu_devices WHERE type = "W";',function(query_res){
       for(var n in query_res){
         for(var o in writeDevices){
           if(query_res[n].id==writeDevices[o].id){
-            A_d = writeDevices[n].A;
-            A_q = String(query_res[n].A);
-            console.log(A_d);
-            console.log(A_q);
+            B_d = writeDevices[n].B;
+            B_q = String(query_res[n].B);
+            console.log(B_d);
+            console.log(B_q);
           }
         }
       }
     })
   }
-},800);
+},1200);
 
 
 function enqueue(queue,element){
