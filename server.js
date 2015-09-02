@@ -42,7 +42,7 @@ function handleDB(q,callback){
       writeLog(err.message);
       return;
     }
-    writeLog('Connected to DB as id: '+connection.threadId);
+    //writeLog('Connected to DB as id: '+connection.threadId);
     connection.query(q,function(err,rows,fields){
       connection.release();
       if(!err){
@@ -51,11 +51,11 @@ function handleDB(q,callback){
           for (var i in rows){
             RowsFields[i] = rows[i];
           }
-          writeLog('Data query and printed successfully!');
+          //console.log('Data query and printed successfully!');
           callback(RowsFields);
         }
         else{
-          writeLog('Data query and inserted successfully!');
+          //writeLog('Data query and inserted successfully!');
           return;
         }
       }
@@ -178,7 +178,7 @@ setInterval(function(){
     var cd = new Date();
     for(var m in readDevices){
       var nd = Number(readDevices[m].last)+(readDevices[m].timeout*1000);
-      if(Number(cd)>Number(nd)){
+      if(Number(cd)>Number(nd) && !searchQueue(orders_queue,readDevices[m].id+'D')){
         enqueue(orders_queue,readDevices[m].id+'D');
         readDevices[m].last = new Date();
       }
@@ -226,5 +226,12 @@ function dequeue(queue){
     return queue.shift();
   }else{
     writeLog('Error: No elements on the queue.');
+  }
+}
+
+function searchQueue(queue,element){
+  for(var x in queue){
+    if(element==queue[x]){return true;}
+    return false;
   }
 }
