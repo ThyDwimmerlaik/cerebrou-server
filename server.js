@@ -161,6 +161,8 @@ http.createServer(function(req,res){
     break;
     case '/test':
       console.log(timeoutDevices);
+      res.writeHead(200,'OK',{'Content-Type':'text/html'});
+      res.end();
     break;
     default:
       writeLog('[404] '+req.method+' to '+req.url);
