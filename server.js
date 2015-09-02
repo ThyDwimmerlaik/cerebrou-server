@@ -76,21 +76,13 @@ http.createServer(function(req,res){
   switch(req.url){
     
     case '/':
-      writeLog('[INFO] Hand-seted parameters.');
       res.writeHead(200,'OK',{'Content-Type':'text/html'});
-      res.write('<html><head><title>Hello cerebroU!</title><head><body>');
-      res.write('<form action="/getdata" method="post">');
-      res.write('Device ID: <input type="text" name="dev_id" value=""/><br/>');
-      res.write('a: <input type="text" name="a" value=""/><br/>');
-      res.write('b: <input type="text" name="b" value=""/><br/>');
-      res.write('c: <input type="text" name="c" value=""/><br/>');
-      res.write('<input type="submit"/>');
-      res.write('</form></body></html>');
       res.end();
     break;
     case '/hello':
       if(req.method=='POST'){
         var k = 0;
+        orders_queue=[];
         writeLog('Recieved hail');
         query = 'SELECT id,type,A FROM cu_devices;';
         handleDB(query,function(query_res){
@@ -113,9 +105,7 @@ http.createServer(function(req,res){
           var current_order = dequeue(orders_queue);
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('#'+current_order+'&');
-          res.end(function(){
-            console.log('callback');
-          });
+          res.end();
         }else{
           res.writeHead(200,'OK',{'Content-Type':'text/html'});
           res.write('~EMPTY');
@@ -175,6 +165,12 @@ http.createServer(function(req,res){
   else
     writeLog('[INFO] '+err.message);
   });
+
+/*
+setInterval(function(){
+
+}, 1500);
+*/
 
 function enqueue(queue,element){
   writeLog('Added '+element+' to the queue.');
