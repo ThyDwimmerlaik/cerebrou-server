@@ -173,7 +173,7 @@ setInterval(function(){
     for(var m in timeoutDevices){
       var nd = Number(timeoutDevices[m].last)+(timeoutDevices[m].timeout*1000);
       if(Number(cd)>Number(nd)){
-        enqueue(orders_queue,timeoutDevices[m].id);
+        enqueue(orders_queue,timeoutDevices[m].id+'D');
         timeoutDevices[m].last = new Date();
       }
     }
