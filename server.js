@@ -196,9 +196,11 @@ setInterval(function(){
             B_q = String(query_res[n].B);
             if(B_d=='OFF' && B_q=='ON'){
               enqueue(orders_queue,writeDevices[o].id+'N');
+              writeDevices[o].B = B_q;
             }
             else if(B_d=='ON' && B_q=='OFF'){
               enqueue(orders_queue,writeDevices[o].id+'M');
+              writeDevices[o].B = B_q;
             }
           }
         }
