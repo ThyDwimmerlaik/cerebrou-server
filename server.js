@@ -93,7 +93,7 @@ http.createServer(function(req,res){
               readDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
               k+=1;
             }else if(query_res[j].type=="W" || query_res[j].type=="M"){
-              writeDevices[l] = {id:query_res[j].id,A:query_res[j].A};
+              writeDevices[l] = {id:query_res[j].id,A:String(query_res[j].A)};
               l+=1;
             }
           }
@@ -184,17 +184,22 @@ setInterval(function(){
       }
     }
   }
-}, 1500);
+}, 5000);
 
-/*
-setInterval(function(){
-  if(writeDevices.length>0){
-    for(var m in writeDevices){
-     
+setInterval(
+  handleDB('SELECT id,A FROM cu_devices WHERE type = "W";',function(query_res){
+    for(var n in query_res){
+      for(var o in writeDevices){
+        if(query_res[n].id==writeDevices[o].id){
+          A_d = writeDevices[n].A;
+          A_q = String(query_res[n].A);
+          console.log(A_d);
+          console.log(A_q);
+        }
+      }
     }
-  }
-}, 1500);
-*/
+  }),800);
+
 
 function enqueue(queue,element){
   writeLog('Pushed '+element+' to the queue.');
