@@ -126,7 +126,7 @@ http.createServer(function(req,res){
         });
         req.on('end',function(){
           if(String(readPostData.id_dev[0])=="T"){
-            handleDB('INSERT INTO cu_lecturas (id_dev,A,B,C,datetime) VALUES ("'+readPostData.id_dev+'",'+readPostData.a+','+readPostData.b+','+readPostData.c+', (NOW()-INTERVAL 5 HOUR));');
+            handleDB('INSERT INTO cu_lecturas (id_dev,A,B,C,datetime) VALUES ("'+readPostData.id_dev+'",'+readPostData.A+','+readPostData.B+','+readPostData.C+', (NOW()-INTERVAL 5 HOUR));');
             res.writeHead(200,'OK',{'Content-Type':'text/html'});
             res.write('~COPY');
             res.end();
