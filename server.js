@@ -134,23 +134,23 @@ http.createServer(function(req,res){
             res.end();
           }
           else if(String(readPostData.id_dev[0])=="S"){
-            if(readPostData.B=="N"){
-              handleDB('UPDATE cu_devices SET B="ON" WHERE id="'+readPostData.id_dev+'";');
+            if(readPostData.A=="N"){
+              handleDB('UPDATE cu_devices SET A="ON" WHERE id="'+readPostData.id_dev+'";');
               for(var h in writeDevices){
                 if(writeDevices[h].id==readPostData.id_dev){
-                  writeDevices[h].B = "ON";
+                  writeDevices[h].A = "ON";
                 }
               }
             }else if(readPostData.A="M"){
-              handleDB('UPDATE cu_devices SET B="OFF" WHERE id="'+readPostData.id_dev+'";');
+              handleDB('UPDATE cu_devices SET A="OFF" WHERE id="'+readPostData.id_dev+'";');
               for(var h in writeDevices){
                 if(writeDevices[h].id==readPostData.id_dev){
-                  writeDevices[h].B = "OFF";
+                  writeDevices[h].A = "OFF";
                 }
               }
             }
-            else if(readPostData.J="1"){
-              handleDB('UPDATE cu_devices SET B="DEAD" WHERE id="'+readPostData.id_dev+'";');
+            else if(readPostData.J="X"){
+              handleDB('UPDATE cu_devices SET J="DEAD" WHERE id="'+readPostData.id_dev+'";');
             }
             res.writeHead(200,'OK',{'Content-Type':'text/html'});
             res.write('~COPY');
