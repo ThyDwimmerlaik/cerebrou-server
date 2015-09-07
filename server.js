@@ -200,7 +200,7 @@ setInterval(function(){
 
 setInterval(function(){
   if(writeDevices.length>0){
-    handleDB('SELECT id,B FROM cu_devices WHERE type = "W";',function(query_res){
+    handleDB('SELECT id,A FROM cu_devices WHERE type = "W";',function(query_res){
       for(var n in query_res){
         for(var o in writeDevices){
           if(query_res[n].id==writeDevices[o].id){
