@@ -85,16 +85,18 @@ http.createServer(function(req,res){
         var l = 0;
         orders_queue=[];
         writeLog('Recieved hail');
-        query = 'SELECT id,type,A,B FROM cu_devices;';
+        query = 'SELECT id,type,A,J FROM cu_devices;';
         handleDB(query,function(query_res){
           for(var j=0;j<query_res.length;j++){
             enqueue(orders_queue,query_res[j].id+'D');
             if(query_res[j].type=="R" || query_res[j].type=="M"){
-              readDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].A),last:new Date()};
+              readDevices[k] = {id:query_res[j].id,timeout:Number(query_res[j].J),last:new Date()};
               k+=1;
             }else if(query_res[j].type=="W" || query_res[j].type=="M"){
-              writeDevices[l] = {id:query_res[j].id,B:String(query_res[j].B)};
-              l+=1;
+              if(query_res[j].J=="ALIVE"){
+                writeDevices[l] = {id:query_res[j].id,A:String(query_res[j].A)};
+                l+=1;
+              }
             }
           }
         });
@@ -202,15 +204,15 @@ setInterval(function(){
       for(var n in query_res){
         for(var o in writeDevices){
           if(query_res[n].id==writeDevices[o].id){
-            B_d = writeDevices[n].B;
-            B_q = String(query_res[n].B);
-            if(B_d=='OFF' && B_q=='ON'){
+            A_d = writeDevices[n].A;
+            A_q = String(query_res[n].A);
+            if(A_d=='OFF' && A_q=='ON'){
               unshift(orders_queue,writeDevices[o].id+'N');
-              writeDevices[o].B = B_q;
+              writeDevices[o].A = A_q;
             }
-            else if(B_d=='ON' && B_q=='OFF'){
+            else if(A_d=='ON' && A_q=='OFF'){
               unshift(orders_queue,writeDevices[o].id+'M');
-              writeDevices[o].B = B_q;
+              writeDevices[o].A = A_q;
             }
           }
         }
