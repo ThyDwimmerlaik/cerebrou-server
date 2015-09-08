@@ -125,7 +125,7 @@ http.createServer(function(req,res){
       res.writeHead(200, "OK", {'Content-Type': 'text/html'});
       res.write('<html><head><title>TEST POST</title></head><body>');
       res.write('<h1>Welcome test /update post</h1>');
-      res.write('<form enctype="application/x-www-form-urlencoded" action="/test" method="post">');
+      res.write('<form enctype="application/x-www-form-urlencoded" action="/update" method="post">');
       res.write('ID: <input type="text" name="id_dev" value="" /><br />');
       res.write('DATA: <input type="text" name="A" value="" /><br />');
       res.write('<input type="submit" />');
@@ -142,9 +142,9 @@ http.createServer(function(req,res){
           readPost += chunk.toString();
         });
         req.on('end',function(){
-          readPostData = querystring.parse(readPost);
+          readPostData = qs.parse(readPost);
           console.log('RAW: '+readPost);
-          console.log('Formated :'+readPostData);
+          console.log(readPostData);
           if(String(readPostData.id_dev[0])=="T"){
             handleDB('INSERT INTO cu_lecturas (id_dev,A,B,C,datetime) VALUES ("'+readPostData.id_dev+'",'+readPostData.A+','+readPostData.B+','+readPostData.C+', (NOW()-INTERVAL 5 HOUR));');
             res.writeHead(200,'OK',{'Content-Type':'text/html'});
