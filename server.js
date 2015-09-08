@@ -119,6 +119,17 @@ http.createServer(function(req,res){
         }
       }
     break;
+    case '/update_test':
+      console.log("[200] " + req.method + " to " + req.url);
+      res.writeHead(200, "OK", {'Content-Type': 'text/html'});
+      res.write('<html><head><title>TEST POST</title></head><body>');
+      res.write('<h1>Welcome test /update post</h1>');
+      res.write('<form enctype="application/x-www-form-urlencoded" action="/update" method="post">');
+      res.write('ID: <input type="text" name="id_dev" value="" /><br />');
+      res.write('DATA: <input type="text" name="A" value="" /><br />');
+      res.write('<input type="submit" />');
+      res.write('</form></body></html');
+      res.end();
     case '/update':
       if(req.method=='POST'){
         req.on('data',function(chunk){
