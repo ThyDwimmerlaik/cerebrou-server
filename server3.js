@@ -131,7 +131,9 @@ http.createServer(function(req,res){
           readPost += chunk.toString();
         });
         req.on('end',function(){
-          readPostData = qs.parse(readPost);
+          readPostData = querystring.parse(readPost);
+          console.log('RAW: '+readPost);
+          console.log('Formated :'+readPostData);
           if(String(readPostData.id_dev[0])=="T"){
             handleDB('INSERT INTO cu_lecturas (id_dev,A,B,C,datetime) VALUES ("'+readPostData.id_dev+'",'+readPostData.A+','+readPostData.B+','+readPostData.C+', (NOW()-INTERVAL 5 HOUR));');
             res.writeHead(200,'OK',{'Content-Type':'text/html'});
