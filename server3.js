@@ -133,12 +133,8 @@ http.createServer(function(req,res){
       res.end();
     case '/update':
       if(req.method=='POST'){
+        readPost = '';
         req.on('data',function(chunk){
-          /*
-          readPostData = qs.parse(String(chunk));
-          writeLog('Recieved data from cerebroU');
-          console.log(readPostData);
-          */
           readPost += chunk.toString();
         });
         req.on('end',function(){
@@ -225,11 +221,11 @@ setInterval(function(){
             A_d = writeDevices[n].A;
             A_q = String(query_res[n].A);
             if(A_d=='OFF' && A_q=='ON'){
-              unshift(orders_queue,writeDevices[o].id+'N');
+              unshift(orders_queue,writeDevices[o].id+'A');
               writeDevices[o].A = A_q;
             }
             else if(A_d=='ON' && A_q=='OFF'){
-              unshift(orders_queue,writeDevices[o].id+'M');
+              unshift(orders_queue,writeDevices[o].id+'A');
               writeDevices[o].A = A_q;
             }
           }
@@ -252,7 +248,7 @@ function unshift(queue,element){
 
 function dequeue(queue){
   if(queue.length>0){
-    writeLog('Shifted '+queue[0]+' from the queue.');
+    writeLog('Dequeued '+queue[0]+' from the queue.');
     return queue.shift();
   }else{
     writeLog('Error: No elements on the queue.');
